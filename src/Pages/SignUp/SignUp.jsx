@@ -1,11 +1,27 @@
+import { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../Providers/AuthProvider";
+import Swal from "sweetalert2";
 
 
 const SignUp = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const {createUser} = useContext(AuthContext)
   const onSubmit = data =>{
      console.log(data);
+     createUser(data.email, data.password)
+     .then(result =>{
+      const loggedUser = result.user;
+      console.log(loggedUser);
+      Swal.fire({
+        position: 'top-cneter',
+        icon: 'success',
+        title: 'Signing Up Successfully',
+        showConfirmButton: false,
+        timer: 1500
+      })
+     })
     };
    
   return (
@@ -55,7 +71,14 @@ const SignUp = () => {
                 className="input input-bordered"
               />
                {errors.password && <span className="text-red-500">Password is required</span>}
+
+               {/* for max length */}
+               {errors.password?.type ==='maxLength' && <span className="text-red-500">Password Must Be Under 20 Characters</span>}
+
+               {/* min length */}
+               {errors.password?.type ==='minLength' && <span className="text-red-500">Password Should Be Atleast 6 Characters</span>}
               <label className="label">
+
                 <a href="#" className="label-text-alt link link-hover">
                   Forgot password?
                 </a>
